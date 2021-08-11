@@ -35,7 +35,7 @@ public class C206_CaseStudy {
 					doFeedback();
 				}			
 				else if(input == 4) {
-					innerMenu("Radio Control Cars");
+					doRcCar();
 				}
 				else if(input == 5) {
 					innerMenu("Radio Control Parts");
@@ -258,7 +258,7 @@ public class C206_CaseStudy {
 		{
 			String sql = "SELECT * FROM feedback";	
 			ResultSet rs = DBUtil.getTable(sql);
-			String output = String.format("%-5s %-45s %-10s %-5s\n", "ID","Feedbakc","Status","Buyer ID");
+			String output = String.format("%-5s %-45s %-10s %-5s\n", "ID","Feedback","Status","Buyer ID");
 			try {
 				while(rs.next()) {
 					int id = rs.getInt("Feedback_ID");
@@ -300,4 +300,81 @@ public class C206_CaseStudy {
 			return rowsAffected;
 
 		}
+		//RADIO CAR MENU --- RUDHI
+				private void doRcCar() {
+					int option = 0;		
+					while(option != 4) {
+						innerMenu("Radio Control Cars");
+						option = Helper.readInt("Enter option > ");
+						if(option == 1) {
+							int product_id = Helper.readInt("Enter Product ID > ");
+							String productName = Helper.readString("Enter Product Name > ");
+							//int availability = Helper.readInt("Enter Availability > ");
+							String features = Helper.readString("Enter features > ");
+							double productPrice = Helper.readDouble("Enter Price > ");
+							if(validateRadioControlCarInput(productName,productPrice))
+								addRcCar(new Radio_Car(product_id,productName,features,productPrice));
+							else
+								System.out.println("Invalid Fields");
+						}
+						else if(option == 2) {
+							System.out.println(viewRcCar()+"\n");
+							int id = Helper.readInt("Enter Product ID > ");
+							deleteRcCar(id);
+						}
+						else if(option == 3) {
+							System.out.println(viewRcCar());
+						}			
+					}
+				}
+				
+				private boolean validateRadioControlCarInput(String name, double price) {
+					return name.length() > 3 && price > 0.0;
+				}
+				private int addRcCar(Radio_Car c) {
+					String insertSQL;					
+					int product_id = c.getProduct_ID();
+					String product_name = c.getName();
+					int availability = 0;
+					double product_price = c.getPrice();
+					String features = c.getFeatures();
+					insertSQL = String.format("INSERT INTO radio_cars(Product_ID,Name,Availability,Price,Features) VALUES(%d,'%s', %d , %f ,'%s')",
+							product_id,product_name,availability,product_price,features);
+					int rowsAffected = DBUtil.execSQL(insertSQL);
+
+					if (rowsAffected == 1)
+						System.out.println("Radio Control Car Added!");		
+					else
+						System.out.println("Adding of Radio Control Car Failed!");
+					
+					return rowsAffected;
+
+				}
+				private int deleteRcCar(int id) {
+					String deleteSQL = String.format("DELETE FROM radio_cars WHERE Product_ID = %d", id);
+					int rowsAffected = DBUtil.execSQL(deleteSQL);
+					if(rowsAffected > 0)
+						System.out.println("Radio Control Car deleted!");
+					else
+						System.out.println("ID does not exist");
+					return rowsAffected;		
+				}
+				private String viewRcCar() {
+					String sql = "SELECT * FROM radio_cars";	
+					ResultSet rs = DBUtil.getTable(sql);
+					String output = String.format("%-15s%-15s%-15s%-10s%-10s\n", "Product ID","Name","Availability","Price","Features");
+					try {
+						while(rs.next()) {
+							int id = rs.getInt("Product_ID");
+							String productName = rs.getString("Name");
+							String Availability = rs.getString("Availability");
+							double price = rs.getDouble("Price");
+							String features = rs.getString("Features");
+							output += String.format("%-15s%-15s%-15s%-10s%-10s\n", id,productName,Availability,price,features);		
+						}
+					}catch(SQLException err){
+						System.out.println("View Failed!");
+					}
+					return output;
+				}
 }
