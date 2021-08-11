@@ -1,120 +1,303 @@
+
 import java.util.ArrayList;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Date;
 
 public class C206_CaseStudy {
-
-	ArrayList<Feedback> fbList = new ArrayList<Feedback>();
-	
-	public static void main(String[] args) {
-
-
-		C206_CaseStudy mainhere = new C206_CaseStudy();
-		mainhere.start();
+	//DB Information
+		private static final String JDBC_URL = "jdbc:mysql://localhost/c206";
+		private static final String DB_USERNAME = "root";
+		private static final String DB_PASSWORD = "";
 		
-	}
-	
-	private void start()
-	{
-		int option = -1;
-
-		while (option != 6) {
-
-			menu();
-			option = Helper.readInt("Enter Choice > ");
-
-			if (option == 1) {
-				//addCustomer();
-			} else if (option == 2) {
-				//showAllCustomers();
-			} else if (option == 3)
-			{
-				
-			}
-			else if (option == 4)
-			{
-				
-			}
-			else if(option == 5)
-			{
-				feedback();
-			}
-			else if (option == 6) {
-				System.out.println("Thank you for using our service!");
-			}
+		public static void main(String[] args) {
+			C206_CaseStudy c = new C206_CaseStudy();
+			c.start();
 		}
-	}
-	
-	private void menu() {
-		
-		Helper.line(60, "=");
-		System.out.println("WELCOME TO RADIO CONTROL CAR PORTAL");
-		Helper.line(60, "=");
-		System.out.println("1. Visitor Registration");
-		System.out.println("2. Radio Control Car Listing");
-		System.out.println("3. Radio Control Car Part Listing");
-		System.out.println("4. Appointments");
-		System.out.println("5. Feedback");
-		System.out.println("6. Quit");
-	}
-	
-	private void feedback()
-	{
-		int option = -1;
-
-		while (option != 5) {
-
-			feedbackmenu();
-			option = Helper.readInt("Enter Choice > ");
-
-			if (option == 1) {
-				viewAllFeedback();
-			} else if (option == 2) {
-				//showAllCustomers();
-			} else if (option == 3)
-			{
+		public void start() {
+			DBUtil.init(JDBC_URL, DB_USERNAME, DB_PASSWORD);
+			int input = 0;
+			while(input != 6) {
+				menu();			
+				input = Helper.readInt("Enter Option > ");
 				
-			}
-			else if (option == 4)
-			{
-				
-			}
-			else if(option == 5)
-			{
-	
-			}
+				if(input == 1) {				
+					doBuyer();
+				}
+				else if(input == 2) {				
+					doAppointment();
+				}
+				else if(input == 3) {
+					doFeedback();
+				}			
+				else if(input == 4) {
+					innerMenu("Radio Control Cars");
+				}
+				else if(input == 5) {
+					innerMenu("Radio Control Parts");
+				}
+								
+					
+			}	
+			System.out.println("Thank you for using Radio Control Car System");
 		}
 		
-	}
-	
-	private void feedbackmenu()
-	{
-		Helper.line(60, "=");
-		System.out.println("FEEDBACK MENU");
-		Helper.line(60, "=");
-		System.out.println("1. View All Feedback");
-		System.out.println("2. Add Feedback");
-		System.out.println("3. Delete Feedback");
-		System.out.println("4. Update Feedback");
-		System.out.println("5. Exit");
-	}
-	
-	private void viewAllFeedback()
-	{
-		Helper.line(60, "=");
-		System.out.println("SHOWING ALL FEEDBACK");
-		Helper.line(60, "=");
-		String output = String.format("%-10s %-40s %-15s %-10s\n", "ID","Feedback","Status","Buyer ID");
+		
+		private void menu() {
+			Helper.line(20, "-*");
+			System.out.println("Radio Control Car System");
+			Helper.line(20, "-*");
+			System.out.println("1. Maintain Guest");
+			System.out.println("2. Maintain Appointment");
+			System.out.println("3. Maintain Feedback");
+			System.out.println("4. Maintain Radio Control cars");
+			System.out.println("5. Maintain Radio Control parts");		
+			System.out.println("6. Exit");				
+			
+		}
+		private void innerMenu(String title) {
+			Helper.line(20, "-*");
+			System.out.println(title);
+			Helper.line(20, "-*");
+			System.out.println("1. ADD "+title);
+			System.out.println("2. Delete "+title);
+			System.out.println("3. View "+title);		
+			System.out.println("4. Exit "+title);
+		}
+		
+		//BUYER MENU --- RAPHAEL
+		private void doBuyer() {
+			int option = 0;		
+			while(option != 4) {
+				innerMenu("Buyer");
+				option = Helper.readInt("Enter option > ");
+				if(option == 1) {
+					String name = Helper.readString("Enter Buyer name > ");
+					String mobileNo = Helper.readString("Enter Mobile Number > ");
+					String email = Helper.readString("Enter Email > ");
+					if(validateGuestInput(mobileNo,name,email))
+						addBuyer(new Buyer(name,mobileNo,email));
+					else
+						System.out.println("Invalid Fields");
+				}
+				else if(option == 2) {
+					System.out.println(viewBuyer()+"\n");
+					int id = Helper.readInt("Enter Buyer ID > ");
+					deleteBuyer(id);
+				}
+				else if(option == 3) {
+					System.out.println(viewBuyer());
+				}			
+			}
+		}
+		
+		private int addBuyer(Buyer b) {
+			String insertSQL;					
+			String name = b.getName();
+			String mobileNo = b.getMobileNo();
+			String email = b.getEmail();
+			insertSQL = String.format("INSERT INTO buyers(Name,MobileNo,Email) VALUES('%s','%s','%s' )",name,mobileNo,email);
+			int rowsAffected = DBUtil.execSQL(insertSQL);
 
-		for (Feedback fb : fbList)
+			if (rowsAffected == 1)
+				System.out.println("Buyer Added!");		
+			else
+				System.out.println("Buyer Registration Failed!");
+			
+			return rowsAffected;
+		}
+		private int deleteBuyer(int id) {
+			String deleteSQL = String.format("DELETE FROM buyers WHERE Buyer_ID = %d", id);
+			int rowsAffected = DBUtil.execSQL(deleteSQL);
+			if(rowsAffected > 0)
+				System.out.println("Buyer deleted!");
+			else
+				System.out.println("Buyer deletion failed");
+			return rowsAffected;
+		}
+		private String viewBuyer() {
+			String sql = "SELECT * FROM buyers";	
+			ResultSet rs = DBUtil.getTable(sql);
+			String output = String.format("%-4s%-10s%-15s%s\n", "ID","Name","MobileNo","Email");
+			try {
+				while(rs.next()) {
+					int id = rs.getInt("Buyer_ID");
+					String name = rs.getString("Name");
+					String mobileNo = rs.getString("MobileNo");
+					String email = rs.getString("Email");
+					output += String.format("%-4s%-10s%-15s%s\n", id,name,mobileNo,email);		
+				}
+			}catch(SQLException err){
+				System.out.println("View Failed!");
+			}
+			return output;
+		}
+		private boolean validateGuestInput(String mobileNo, String name, String email) {
+			return mobileNo.matches("[8|9][0-9]{7}") && name.length() > 3 && email.matches("[\\w]+@[\\w]+.com"); 
+		}
+		
+		//APPOINTMENT MENU --- SARAN
+		private void doAppointment() {
+			int option = 0;		
+			while(option != 4) {
+				innerMenu("Appointment");
+				option = Helper.readInt("Enter option > ");
+				if(option == 1) {
+					System.out.println(viewBuyer());
+					int buyer_id = Helper.readInt("Enter Buyer ID > ");
+					String AppointmentDate = Helper.readString("Enter App Date (MM/dd/yyyy) > ");
+					String staffName = Helper.readString("Enter Staff-Incharge > ");				
+					if(checkDate(AppointmentDate) && checkName(staffName))
+						addAppointment(new Appointment(buyer_id,AppointmentDate,staffName));
+					else
+						System.out.println("Invalid Fields");
+				}
+				else if(option == 2) {
+					System.out.println(viewAppointments()+"\n");
+					int id = Helper.readInt("Enter Appointment ID > ");
+					deleteAppointment(id);
+				}
+				else if(option == 3) {
+					System.out.println(viewAppointments());
+				}			
+			}
+		}
+		private int addAppointment(Appointment a) {
+			String insertSQL;					
+			String staffName = a.getStaff_Name();
+			String appDate = a.getDate();
+			int id = a.getBuyer_id();
+			insertSQL = String.format("INSERT INTO appointment(Buyer_ID,Date,Staff_Name) VALUES(%d,'%s','%s' )",id,appDate,staffName);
+			int rowsAffected = DBUtil.execSQL(insertSQL);
+
+			if (rowsAffected == 1)
+				System.out.println("Appointment Added!");		
+			else
+				System.out.println("Appointment Registration Failed!");
+			
+			return rowsAffected;
+
+		}
+		private int deleteAppointment(int id) {
+			String deleteSQL = String.format("DELETE FROM appointment WHERE Appointment_ID = %d", id);
+			int rowsAffected = DBUtil.execSQL(deleteSQL);
+			if(rowsAffected > 0)
+				System.out.println("Appointment deleted!");
+			else
+				System.out.println("ID does not exist");
+			return rowsAffected;		
+		}
+		private String viewAppointments() {
+			String sql = "SELECT * FROM appointment";	
+			ResultSet rs = DBUtil.getTable(sql);
+			String output = String.format("%-5s%-15s%s\n", "ID","Date","Staff Name");
+			try {
+				while(rs.next()) {
+					int id = rs.getInt("Appointment_ID");
+					String appDate = rs.getString("Date");
+					String staffName = rs.getString("Staff_Name");				
+					output += String.format("%-5s%-15s%s\n", id,appDate,staffName);		
+				}
+			}catch(SQLException err){
+				System.out.println("View Failed!");
+			}
+			return output;
+		}
+		private boolean checkName(String name) {
+			return name.length() > 3;
+		}
+		private boolean checkDate(String appDate) {		
+			try {
+				Date d = new SimpleDateFormat("MM/dd/yyyy").parse(appDate);
+				return d.after(new Date());
+			} catch (ParseException e) {
+				System.out.println("Enter in MM/dd/yyyy format!");
+			} 
+			return false;
+			
+		}
+		
+		//FEEDBACK MENU --- HUI JUN
+		private void doFeedback() 
 		{
-			output += String.format("%-10d %-40s %-15d -10d\n", fb.getFeedback_id(), fb.getFeedback(),fb.getStatus(),fb.getBuyer_id());
+			int option = 0;		
+			while(option != 4) {
+				innerMenu("Feedback");
+				option = Helper.readInt("Enter option > ");
+				
+				if(option == 1)
+				{
+					System.out.println("Add feedback");
+					int id = Helper.readInt("Enter ID > ");
+					String feedback = Helper.readString("Enter Feedback > ");
+					int status = Helper.readInt("Enter status > ");
+					int buyerid = Helper.readInt("Enter Buyer_ID > ");
+					addFeedback(new Feedback(id,feedback,status,buyerid));
+					
+				}
+				else if(option == 2)
+				{
+					System.out.println("Delete feedback");
+					System.out.println(viewFeedback()+"\n");
+					int id = Helper.readInt("Enter Feedback ID > ");
+					deleteFeedback(id);
+				}
+				else if(option == 3)
+				{
+					System.out.println("View feedback");
+					System.out.println(viewFeedback());
+				}
+			}
 		}
-		System.out.println(output);
-	}
-	private void addFeedback()
-	{
-		Helper.line(60, "=");
-		System.out.println("ADDING FEEDBACK");
-		Helper.line(60, "=");
-	}
+		
+		private String viewFeedback()
+		{
+			String sql = "SELECT * FROM feedback";	
+			ResultSet rs = DBUtil.getTable(sql);
+			String output = String.format("%-5s %-45s %-10s %-5s\n", "ID","Feedbakc","Status","Buyer ID");
+			try {
+				while(rs.next()) {
+					int id = rs.getInt("Feedback_ID");
+					String feedback = rs.getString("Feedback");
+					int status = rs.getInt("Status");	
+					int buyid = rs.getInt("Buyer_ID");
+					output += String.format("%-5d %-45s %-10d %-5d\n", id,feedback,status,buyid);		
+				}
+			}catch(SQLException err){
+				System.out.println("View Failed!");
+			}
+			return output;
+		}
+		
+		private int deleteFeedback(int id)
+		{
+			String deleteSQL = String.format("DELETE FROM appointment WHERE Feedback_ID = %d", id);
+			int rowsAffected = DBUtil.execSQL(deleteSQL);
+			if(rowsAffected > 0)
+				System.out.println("Feedback deleted!");
+			else
+				System.out.println("ID does not exist");
+			return rowsAffected;
+		}
+		private int addFeedback(Feedback a) {					
+			int id = a.getFeedback_id();
+			String fb = a.getFeedback();
+			String status = a.getStatus();
+			int buyid = a.getBuyer_id();
+			
+			String insertSQL = String.format("INSERT INTO Feedback(Feedback_ID,Feedback,Status,Buyer_ID) VALUES(%d,'%s','%s' )",id,fb,status,buyid);
+			int rowsAffected = DBUtil.execSQL(insertSQL);
+
+			if (rowsAffected == 1)
+				System.out.println("Feedback Added!");		
+			else
+				System.out.println("Feedback Failed!");
+			
+			return rowsAffected;
+
+		}
 }
