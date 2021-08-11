@@ -26,7 +26,7 @@ public class C206_CaseStudy {
 					doBuyer();
 				}
 				else if(input == 2) {				
-					//doAppointment();
+					doAppointment();
 				}
 				else if(input == 3) {
 					innerMenu("Feedback");
@@ -136,6 +136,86 @@ public class C206_CaseStudy {
 		private boolean validateGuestInput(String mobileNo, String name, String email) {
 			return mobileNo.matches("[8|9][0-9]{7}") && name.length() > 3 && email.matches("[\\w]+@[\\w]+.com"); 
 		}
-		
+
+		//APPOINTMENT MENU --- SARAN
+		private void doAppointment() {
+			int option = 0;		
+			while(option != 4) {
+				innerMenu("Appointment");
+				option = Helper.readInt("Enter option > ");
+				if(option == 1) {
+					System.out.println(viewBuyer());
+					int buyer_id = Helper.readInt("Enter Buyer ID > ");
+					String AppointmentDate = Helper.readString("Enter App Date (MM/dd/yyyy) > ");
+					String staffName = Helper.readString("Enter Staff-Incharge > ");				
+					if(checkDate(AppointmentDate) && checkName(staffName))
+						addAppointment(new Appointment(buyer_id,AppointmentDate,staffName));
+					else
+						System.out.println("Invalid Fields");
+				}
+				else if(option == 2) {
+					System.out.println(viewAppointments()+"\n");
+					int id = Helper.readInt("Enter Appointment ID > ");
+					deleteAppointment(id);
+				}
+				else if(option == 3) {
+					System.out.println(viewAppointments());
+				}			
+			}
+		}
+		private int addAppointment(Appointment a) {
+			String insertSQL;					
+			String staffName = a.getStaff_Name();
+			String appDate = a.getDate();
+			int id = a.getBuyer_id();
+			insertSQL = String.format("INSERT INTO appointment(Buyer_ID,Date,Staff_Name) VALUES(%d,'%s','%s' )",id,appDate,staffName);
+			int rowsAffected = DBUtil.execSQL(insertSQL);
+
+			if (rowsAffected == 1)
+				System.out.println("Appointment Added!");		
+			else
+				System.out.println("Appointment Registration Failed!");
+			
+			return rowsAffected;
+
+		}
+		private int deleteAppointment(int id) {
+			String deleteSQL = String.format("DELETE FROM appointment WHERE Appointment_ID = %d", id);
+			int rowsAffected = DBUtil.execSQL(deleteSQL);
+			if(rowsAffected > 0)
+				System.out.println("Appointment deleted!");
+			else
+				System.out.println("ID does not exist");
+			return rowsAffected;		
+		}
+		private String viewAppointments() {
+			String sql = "SELECT * FROM appointment";	
+			ResultSet rs = DBUtil.getTable(sql);
+			String output = String.format("%-5s%-15s%s\n", "ID","Date","Staff Name");
+			try {
+				while(rs.next()) {
+					int id = rs.getInt("Appointment_ID");
+					String appDate = rs.getString("Date");
+					String staffName = rs.getString("Staff_Name");				
+					output += String.format("%-5s%-15s%s\n", id,appDate,staffName);		
+				}
+			}catch(SQLException err){
+				System.out.println("View Failed!");
+			}
+			return output;
+		}
+		private boolean checkName(String name) {
+			return name.length() > 3;
+		}
+		private boolean checkDate(String appDate) {		
+			try {
+				Date d = new SimpleDateFormat("MM/dd/yyyy").parse(appDate);
+				return d.after(new Date());
+			} catch (ParseException e) {
+				System.out.println("Enter in MM/dd/yyyy format!");
+			} 
+			return false;
+			
+		}
 
 }
