@@ -28,7 +28,7 @@ public class Feedback {
 		return status == 0 ? "Pending" : "Solved";
 	}
 	public void setStatus(int status) {
-		status = status;
+		this.status = status;
 	}
 	public int getBuyer_id() {
 		return buyer_id;
