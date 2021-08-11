@@ -26,7 +26,7 @@ public class C206_CaseStudy {
 					doBuyer();
 				}
 				else if(input == 2) {				
-					doAppointment();
+					//doAppointment();
 				}
 				else if(input == 3) {
 					innerMenu("Feedback");
@@ -137,5 +137,5 @@ public class C206_CaseStudy {
 			return mobileNo.matches("[8|9][0-9]{7}") && name.length() > 3 && email.matches("[\\w]+@[\\w]+.com"); 
 		}
 		
-	////dwad
+
 }
