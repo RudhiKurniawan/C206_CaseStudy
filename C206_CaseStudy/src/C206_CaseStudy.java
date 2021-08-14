@@ -167,7 +167,19 @@ public class C206_CaseStudy {
 				}
 				else if(option == 3) {
 					System.out.println(viewAppointments());
-				}			
+				}		
+				else if(option == 4) {
+					System.out.println(viewAppointments());
+					int id = Helper.readInt("Enter Appointment ID > ");
+					int buyer_id = Helper.readInt("Enter Buyer ID > ");
+					String AppointmentDate = Helper.readString("Enter App Date (MM/dd/yyyy) > ");
+					String staffName = Helper.readString("Enter Staff-Incharge > ");		
+					
+					if(checkDate(AppointmentDate) && checkName(staffName))
+						updateAppointment(new Appointment(buyer_id,id,AppointmentDate,staffName));
+					else
+						System.out.println("Invalid Fields");		
+				}
 			}
 		}
 		public int updateAppointment(Appointment a) {
