@@ -66,13 +66,18 @@ public class C206_CaseStudy {
 			System.out.println("1. ADD "+title);
 			System.out.println("2. Delete "+title);
 			System.out.println("3. View "+title);		
-			System.out.println("4. Exit "+title);
+			
+			if(title.equals("Appointment") || title.equals("Buyer"))
+				System.out.println("4. Update "+title);
+			else
+				System.out.println("4. Search "+title);
+			System.out.println("5. Exit "+title);
 		}
 		
 		//BUYER MENU --- RAPHAEL
 		private void doBuyer() {
 			int option = 0;		
-			while(option != 4) {
+			while(option != 5) {
 				innerMenu("Buyer");
 				option = Helper.readInt("Enter option > ");
 				if(option == 1) {
@@ -93,8 +98,7 @@ public class C206_CaseStudy {
 					System.out.println(viewBuyer());
 				}			
 			}
-		}
-		
+		}		
 		public int addBuyer(Buyer b) {
 			String insertSQL;					
 			String name = b.getName();
@@ -110,7 +114,7 @@ public class C206_CaseStudy {
 			
 			return rowsAffected;
 		}
-		private int deleteBuyer(int id) {
+		public int deleteBuyer(int id) {
 			String deleteSQL = String.format("DELETE FROM buyers WHERE Buyer_ID = %d", id);
 			int rowsAffected = DBUtil.execSQL(deleteSQL);
 			if(rowsAffected > 0)
@@ -119,7 +123,7 @@ public class C206_CaseStudy {
 				System.out.println("Buyer deletion failed");
 			return rowsAffected;
 		}
-		private String viewBuyer() {
+		public String viewBuyer() {
 			String sql = "SELECT * FROM buyers";	
 			ResultSet rs = DBUtil.getTable(sql);
 			String output = String.format("%-4s%-10s%-15s%s\n", "ID","Name","MobileNo","Email");
@@ -136,14 +140,14 @@ public class C206_CaseStudy {
 			}
 			return output;
 		}
-		private boolean validateGuestInput(String mobileNo, String name, String email) {
+		public boolean validateGuestInput(String mobileNo, String name, String email) {
 			return mobileNo.matches("[8|9][0-9]{7}") && name.length() > 3 && email.matches("[\\w]+@[\\w]+.com"); 
 		}
 		
 		//APPOINTMENT MENU --- SARAN
 		private void doAppointment() {
 			int option = 0;		
-			while(option != 4) {
+			while(option != 5) {
 				innerMenu("Appointment");
 				option = Helper.readInt("Enter option > ");
 				if(option == 1) {
@@ -166,7 +170,20 @@ public class C206_CaseStudy {
 				}			
 			}
 		}
-		private int addAppointment(Appointment a) {
+		public int updateAppointment(Appointment a) {
+			
+			String insertSQL = String.format("UPDATE appointment SET Buyer_ID = %d,Date='%s',Staff_Name ='%s' WHERE Appointment_ID = %d",a.getBuyer_id(),a.getDate(),a.getStaff_Name(),a.getAppointment_id());
+			int rowsAffected = DBUtil.execSQL(insertSQL);
+
+			if (rowsAffected == 1)
+				System.out.println("Appointment Updated!");		
+			else
+				System.out.println("Appointment Buyer ID dont exist or Appointment_ID dont exist!");
+			
+			return rowsAffected;
+			
+		}		
+		public int addAppointment(Appointment a) {
 			String insertSQL;					
 			String staffName = a.getStaff_Name();
 			String appDate = a.getDate();
@@ -182,7 +199,7 @@ public class C206_CaseStudy {
 			return rowsAffected;
 
 		}
-		private int deleteAppointment(int id) {
+		public int deleteAppointment(int id) {
 			String deleteSQL = String.format("DELETE FROM appointment WHERE Appointment_ID = %d", id);
 			int rowsAffected = DBUtil.execSQL(deleteSQL);
 			if(rowsAffected > 0)
@@ -191,7 +208,7 @@ public class C206_CaseStudy {
 				System.out.println("ID does not exist");
 			return rowsAffected;		
 		}
-		private String viewAppointments() {
+		public String viewAppointments() {
 			String sql = "SELECT * FROM appointment";	
 			ResultSet rs = DBUtil.getTable(sql);
 			String output = String.format("%-5s%-15s%s\n", "ID","Date","Staff Name");
@@ -207,10 +224,10 @@ public class C206_CaseStudy {
 			}
 			return output;
 		}
-		private boolean checkName(String name) {
+		public boolean checkName(String name) {
 			return name.length() > 3;
 		}
-		private boolean checkDate(String appDate) {		
+		public boolean checkDate(String appDate) {		
 			try {
 				Date d = new SimpleDateFormat("MM/dd/yyyy").parse(appDate);
 				return d.after(new Date());
@@ -225,7 +242,7 @@ public class C206_CaseStudy {
 		private void doFeedback() 
 		{
 			int option = 0;		
-			while(option != 4) {
+			while(option != 5) {
 				innerMenu("Feedback");
 				option = Helper.readInt("Enter option > ");
 				
@@ -303,7 +320,7 @@ public class C206_CaseStudy {
 		//RADIO CAR MENU --- RUDHI
 				private void doRcCar() {
 					int option = 0;		
-					while(option != 4) {
+					while(option != 5) {
 						innerMenu("Radio Control Cars");
 						option = Helper.readInt("Enter option > ");
 						if(option == 1) {
