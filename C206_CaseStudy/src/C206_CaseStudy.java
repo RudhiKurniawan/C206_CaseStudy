@@ -95,7 +95,7 @@ public class C206_CaseStudy {
 			}
 		}
 		
-		private int addBuyer(Buyer b) {
+		public int addBuyer(Buyer b) {
 			String insertSQL;					
 			String name = b.getName();
 			String mobileNo = b.getMobileNo();
