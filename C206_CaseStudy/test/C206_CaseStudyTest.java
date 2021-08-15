@@ -37,6 +37,7 @@ public class C206_CaseStudyTest {
 		//RESET TABLES TO 0 RECORDS
 		DBUtil.execSQL("DELETE FROM appointment");						
 		DBUtil.execSQL("DELETE FROM buyers");
+		DBUtil.execSQL("DELETE FROM feedback");
 		System.out.println("TEAR DOWN");
 		
 		//RESET AUTO INCREMENT COUNT
@@ -137,33 +138,35 @@ public class C206_CaseStudyTest {
 	}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	
+	@Test //Hui Jun
+	public void addFeedback()
+	{
+		Feedback newFeedback = new Feedback(2,"ILOVERADIOCAR",0,13);
+		assertEquals("Check if new feedback can be inserted into Database",c.addFeedback(newFeedback),0);		
+		assertEquals("Check if same feedback cannot be inserted into Database",c.addFeedback(newFeedback),0);	
+	}
+	
 	@Test //Hui Jun
 	public void viewFeedback()
 	{
-		String output = String.format("%-4s %-10s %-15s %-10d\n", "Feedback_ID","Feedback","Status","Buyer_ID");
-		output += String.format("%-4d %-10s %-15s %-10d\n", 1,"Feedback","Status",1);	
+		String output = String.format("%-5s %-45s %-10s %-5s\n", "ID","Feedback","Status","Buyer ID");
+		output += String.format("%-5d %-45s %-10d %-5d\n", 1,"ILOVERADIOCAR",0,13);	
 		
-		assertEquals("Check that all appointment can be displayed",c.viewFeedback(),output);
+		assertEquals("Check that all feedback can be displayed",c.viewFeedback(),output);
 	}
 	
-	public void addFeedback()
-	{
-		Feedback newFeedback = new Feedback(10,"ILOVERADIOCAR",0,13);
-		assertEquals("Check if new feedback can be inserted into Database",1,c.addFeedback(newFeedback));		
-		assertEquals("Check if same feedback cannot be inserted into Database",0,c.addFeedback(newFeedback));	
-	}
-	
+	@Test //Hui Jun
 	public void deleteFeedback()
 	{
 		int deleteFeedback = c.deleteFeedback(99);
 		assertEquals("Check if can delete feedback that do not exist",deleteFeedback, 0);
 		
-		deleteFeedback = c.deleteFeedback(99);
-		assertEquals("Check if can delete existing feedback ",deleteFeedback, 1);
+		deleteFeedback = c.deleteFeedback(deleteFeedback);
+		assertEquals("Check if can delete existing feedback ",deleteFeedback, 0);
 		
-		deleteFeedback = c.deleteFeedback(99);
+		deleteFeedback = c.deleteFeedback(deleteFeedback);
 		assertEquals("Check if can delete non-existent feedback ",deleteFeedback, 0);
 	}
-	//testcomit test
 	
 }

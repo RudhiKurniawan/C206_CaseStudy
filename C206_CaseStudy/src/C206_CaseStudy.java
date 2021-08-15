@@ -263,9 +263,9 @@ public class C206_CaseStudy {
 					System.out.println("Add feedback");
 					int id = Helper.readInt("Enter ID > ");
 					String feedback = Helper.readString("Enter Feedback > ");
-					int status = Helper.readInt("Enter status > ");
+					//int status = Helper.readInt("Enter status > ");
 					int buyerid = Helper.readInt("Enter Buyer_ID > ");
-					addFeedback(new Feedback(id,feedback,status,buyerid));
+					addFeedback(new Feedback(id,feedback,0,buyerid));
 					
 				}
 				else if(option == 2)
@@ -315,10 +315,10 @@ public class C206_CaseStudy {
 		public int addFeedback(Feedback a) {					
 			int id = a.getFeedback_id();
 			String fb = a.getFeedback();
-			String status = a.getStatus();
+			//String status = a.getStatus();
 			int buyid = a.getBuyer_id();
 			
-			String insertSQL = String.format("INSERT INTO Feedback(Feedback_ID,Feedback,Status,Buyer_ID) VALUES(%d,'%s','%s' )",id,fb,status,buyid);
+			String insertSQL = String.format("INSERT INTO Feedback(Feedback_ID,Feedback,Status,Buyer_ID) VALUES(%d,'%s','%s' )",id,fb,"Pending",buyid);
 			int rowsAffected = DBUtil.execSQL(insertSQL);
 
 			if (rowsAffected == 1)
