@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.util.Date;
 
 public class C206_CaseStudy {
-	//DB Information
+	//DB Information//
 		private static final String JDBC_URL = "jdbc:mysql://localhost/c206";
 		private static final String DB_USERNAME = "root";
 		private static final String DB_PASSWORD = "";
