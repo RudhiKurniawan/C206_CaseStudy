@@ -382,7 +382,7 @@ public class C206_CaseStudy {
 				private boolean validateRadioControlCarInput(String name, double price) {
 					return name.length() > 3 && price > 0.0;
 				}
-				private int addRcCar(Radio_Car c) {
+				public int addRcCar(Radio_Car c) {
 					String insertSQL;					
 					int product_id = c.getProduct_ID();
 					String product_name = c.getName();
@@ -401,7 +401,7 @@ public class C206_CaseStudy {
 					return rowsAffected;
 
 				}
-				private int deleteRcCar(int id) {
+				public int deleteRcCar(int id) {
 					String deleteSQL = String.format("DELETE FROM radio_cars WHERE Product_ID = %d", id);
 					int rowsAffected = DBUtil.execSQL(deleteSQL);
 					if(rowsAffected > 0)
@@ -410,7 +410,7 @@ public class C206_CaseStudy {
 						System.out.println("ID does not exist");
 					return rowsAffected;		
 				}
-				private String viewRcCar() {
+				public String viewRcCar() {
 					String sql = "SELECT * FROM radio_cars";	
 					ResultSet rs = DBUtil.getTable(sql);
 					String output = String.format("%-15s%-15s%-15s%-10s%-10s\n", "Product ID","Name","Availability","Price","Features");

@@ -19,6 +19,7 @@ public class C206_CaseStudyTest {
 	private static final int BUYER_ID = 1;
 	private static final int APPOINTMENT_ID = 1;	
 	private static final int FEEDBACK_ID = 1;	
+	private static final int PRODUCT_ID =1;
 	
 	@Before 
 	public void setUp() throws Exception { 
@@ -261,6 +262,41 @@ public class C206_CaseStudyTest {
 		
 		deleteFeedback = c.deleteFeedback(deleteFeedback);
 		assertEquals("Check if can delete feedback that was deleted ",deleteFeedback, 0);
+	}
+	
+	@Test //Rudhi
+	public void addRcCar()
+	{
+		System.out.println("\nRadio Control Car -ADD");
+		Helper.line(40, "-*");
+		Radio_Car newRadioCar = new Radio_Car(PRODUCT_ID,"TOYOTARCCAR",0);
+		assertEquals("Check if new Radio Control Car can be inserted into Database",c.addRcCar(newRadioCar),1);		
+		assertEquals("Check if same Radio Control Car cannot be inserted into Database",c.addRcCar(newRadioCar),0);	
+	}
+	
+	@Test //Rudhi
+	public void viewRcCar()
+	{
+		System.out.println("\nRadio Control Car - VIEW");
+		Helper.line(40, "-*");
+		String output = String.format("%-5s %-45s %-10s %-5s\n", "PRODUCT ID","Name","Availability","Price");
+		output += String.format("%-5d %-45s %-10d %-5d\n", PRODUCT_ID,"TEST",0,20.0);			
+		assertEquals("Check that all Radio Control Car can be displayed",c.viewRcCar(),output);
+	}
+	
+	@Test //Rudhi
+	public void deleteRcCar()
+	{
+		System.out.println("\nRadio Control Car - DELETE");
+		Helper.line(40, "-*");
+		int deleteRcCar = c.deleteRcCar(99);
+		assertEquals("Check if can delete Radio Control Car that do not exist",deleteRcCar, 0);
+		
+		deleteRcCar = c.deleteRcCar(PRODUCT_ID);
+		assertEquals("Check if can delete existing Radio Control Car ",deleteRcCar, 1);
+		
+		deleteRcCar = c.deleteRcCar(deleteRcCar);
+		assertEquals("Check if can delete feedback that was deleted ",deleteRcCar, 0);
 	}
 	
 }
