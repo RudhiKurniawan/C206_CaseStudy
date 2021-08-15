@@ -136,6 +136,33 @@ public class C206_CaseStudyTest {
 		assertEquals("Test that return false when name valid",c.checkName("Saran"), true);
 	}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+	
+	@Test //Hui Jun
+	public void viewFeedback()
+	{
+		String output = String.format("%-4s %-10s %-15s %-10d\n", "Feedback_ID","Feedback","Status","Buyer_ID");
+		output += String.format("%-4d %-10s %-15s %-10d\n", 1,"Feedback","Status",1);	
+		
+		assertEquals("Check that all appointment can be displayed",c.viewFeedback(),output);
+	}
+	
+	public void addFeedback()
+	{
+		Feedback newFeedback = new Feedback(10,"ILOVERADIOCAR",0,13);
+		assertEquals("Check if new feedback can be inserted into Database",1,c.addFeedback(newFeedback));		
+		assertEquals("Check if same feedback cannot be inserted into Database",0,c.addFeedback(newFeedback));	
+	}
+	
+	public void deleteFeedback()
+	{
+		int deleteFeedback = c.deleteFeedback(99);
+		assertEquals("Check if can delete feedback that do not exist",deleteFeedback, 0);
+		
+		deleteFeedback = c.deleteFeedback(99);
+		assertEquals("Check if can delete existing feedback ",deleteFeedback, 1);
+		
+		deleteFeedback = c.deleteFeedback(99);
+		assertEquals("Check if can delete non-existent feedback ",deleteFeedback, 0);
+	}
 	
 }

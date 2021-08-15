@@ -251,7 +251,7 @@ public class C206_CaseStudy {
 		}
 		
 		//FEEDBACK MENU --- HUI JUN
-		private void doFeedback() 
+		public void doFeedback() 
 		{
 			int option = 0;		
 			while(option != 5) {
@@ -283,7 +283,7 @@ public class C206_CaseStudy {
 			}
 		}
 		
-		private String viewFeedback()
+		public String viewFeedback()
 		{
 			String sql = "SELECT * FROM feedback";	
 			ResultSet rs = DBUtil.getTable(sql);
@@ -302,7 +302,7 @@ public class C206_CaseStudy {
 			return output;
 		}
 		
-		private int deleteFeedback(int id)
+		public int deleteFeedback(int id)
 		{
 			String deleteSQL = String.format("DELETE FROM appointment WHERE Feedback_ID = %d", id);
 			int rowsAffected = DBUtil.execSQL(deleteSQL);
@@ -312,7 +312,7 @@ public class C206_CaseStudy {
 				System.out.println("ID does not exist");
 			return rowsAffected;
 		}
-		private int addFeedback(Feedback a) {					
+		public int addFeedback(Feedback a) {					
 			int id = a.getFeedback_id();
 			String fb = a.getFeedback();
 			String status = a.getStatus();
