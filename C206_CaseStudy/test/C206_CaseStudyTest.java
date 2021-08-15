@@ -35,7 +35,13 @@ public class C206_CaseStudyTest {
 		//Add Feedback with buyer_id 1 and feedback id _1
 		insertSQL = String.format("INSERT INTO Feedback(Feedback_ID,Feedback,Status,Buyer_ID) VALUES(%d,'%s',%d,%d )",FEEDBACK_ID,"TEST",0,BUYER_ID);
 		DBUtil.execSQL(insertSQL);
+		
+		//Add Radio Car product id 1
+		insertSQL = String.format("INSERT INTO radio_cars(Product_ID,Name,Availability,Price,Features) VALUES(%d,'%s',%d,%.2f,'%s' )",PRODUCT_ID,"TEST",0,0.0,"TEST");
+		DBUtil.execSQL(insertSQL);
 		System.out.println("SETUP");
+		
+		
 		
 	}
 
@@ -44,13 +50,16 @@ public class C206_CaseStudyTest {
 		//RESET TABLES TO 0 RECORDS
 		DBUtil.execSQL("DELETE FROM feedback");
 		DBUtil.execSQL("DELETE FROM appointment");						
-		DBUtil.execSQL("DELETE FROM buyers");		
-		System.out.println("TEAR DOWN");
+		DBUtil.execSQL("DELETE FROM buyers");	
+		DBUtil.execSQL("DELETE FROM radio_cars");		
 		
 		//RESET AUTO INCREMENT COUNT
 		DBUtil.execSQL("ALTER TABLE appointment AUTO_INCREMENT = 1");
 		DBUtil.execSQL("ALTER TABLE buyers AUTO_INCREMENT = 1");
 		DBUtil.execSQL("ALTER TABLE feedback AUTO_INCREMENT = 1");
+		DBUtil.execSQL("ALTER TABLE radio_cars AUTO_INCREMENT = 1");
+		
+		System.out.println("TEAR DOWN");
 	}
 
 	@Test 
@@ -58,6 +67,7 @@ public class C206_CaseStudyTest {
 		//fail("Not yet implemented"); 
 		assertTrue("C206_CaseStudy_SampleTest ",true);
 	}
+	
 	// Raphael /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	@Test
 	public void addBuyer() {
@@ -266,21 +276,23 @@ public class C206_CaseStudyTest {
 	
 	@Test //Rudhi
 	public void addRcCar()
-	{
+	{		
 		System.out.println("\nRadio Control Car -ADD");
 		Helper.line(40, "-*");
-		Radio_Car newRadioCar = new Radio_Car(PRODUCT_ID,"TOYOTARCCAR",0);
+		Radio_Car newRadioCar = new Radio_Car("TESTER2","TEST",0.0);		
 		assertEquals("Check if new Radio Control Car can be inserted into Database",c.addRcCar(newRadioCar),1);		
-		assertEquals("Check if same Radio Control Car cannot be inserted into Database",c.addRcCar(newRadioCar),0);	
+		assertEquals("Check if same Radio Control Car cannot be inserted into Database",c.addRcCar(newRadioCar),0)	;	
 	}
 	
 	@Test //Rudhi
 	public void viewRcCar()
 	{
+		//insertSQL = String.format("INSERT INTO radio_cars(Product_ID,Name,Availability,Price,Features) VALUES(%d,'%s',%d,%.2f,'%s' )",PRODUCT_ID,"TEST",0,0.0,"TEST");
 		System.out.println("\nRadio Control Car - VIEW");
 		Helper.line(40, "-*");
-		String output = String.format("%-5s %-45s %-10s %-5s\n", "PRODUCT ID","Name","Availability","Price");
-		output += String.format("%-5d %-45s %-10d %-5d\n", PRODUCT_ID,"TEST",0,20.0);			
+		String output = String.format("%-15s%-15s%-15s%-10s%-10s\n", "Product ID","Name","Availability","Price","Features");
+		output += String.format("%-15s%-15s%-15s%-10s%-10s\n", PRODUCT_ID,"TEST",0,0.0,"TEST");		
+		System.out.println(c.viewRcCar());
 		assertEquals("Check that all Radio Control Car can be displayed",c.viewRcCar(),output);
 	}
 	
@@ -289,6 +301,7 @@ public class C206_CaseStudyTest {
 	{
 		System.out.println("\nRadio Control Car - DELETE");
 		Helper.line(40, "-*");
+		
 		int deleteRcCar = c.deleteRcCar(99);
 		assertEquals("Check if can delete Radio Control Car that do not exist",deleteRcCar, 0);
 		

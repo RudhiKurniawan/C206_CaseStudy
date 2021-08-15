@@ -383,14 +383,12 @@ public class C206_CaseStudy {
 					return name.length() > 3 && price > 0.0;
 				}
 				public int addRcCar(Radio_Car c) {
-					String insertSQL;					
-					int product_id = c.getProduct_ID();
+					String insertSQL;										
 					String product_name = c.getName();
 					int availability = 0;
 					double product_price = c.getPrice();
 					String features = c.getFeatures();
-					insertSQL = String.format("INSERT INTO radio_cars(Product_ID,Name,Availability,Price,Features) VALUES(%d,'%s', %d , %f ,'%s')",
-							product_id,product_name,availability,product_price,features);
+					insertSQL = String.format("INSERT INTO radio_cars(Name,Availability,Price,Features) VALUES('%s', %d , %f ,'%s')",product_name,availability,product_price,features);
 					int rowsAffected = DBUtil.execSQL(insertSQL);
 
 					if (rowsAffected == 1)

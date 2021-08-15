@@ -13,6 +13,12 @@ public class Radio_Car {
 		this.features = features;
 		this.price = price;
 	}
+	public Radio_Car(String name, String features, double price) {				
+		this.name = name;
+		this.availability = 0;
+		this.features = features;
+		this.price = price;
+	}
 	public Radio_Car(int product_ID, String name, int availability) {
 		this.product_ID = product_ID;
 		this.name = name;
