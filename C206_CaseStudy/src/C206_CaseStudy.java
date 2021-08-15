@@ -304,7 +304,7 @@ public class C206_CaseStudy {
 		
 		public int deleteFeedback(int id)
 		{
-			String deleteSQL = String.format("DELETE FROM appointment WHERE Feedback_ID = %d", id);
+			String deleteSQL = String.format("DELETE FROM feedback WHERE Feedback_ID = %d", id);
 			int rowsAffected = DBUtil.execSQL(deleteSQL);
 			if(rowsAffected > 0)
 				System.out.println("Feedback deleted!");
@@ -312,13 +312,12 @@ public class C206_CaseStudy {
 				System.out.println("ID does not exist");
 			return rowsAffected;
 		}
-		public int addFeedback(Feedback a) {					
-			int id = a.getFeedback_id();
+		public int addFeedback(Feedback a) {								
 			String fb = a.getFeedback();
-			//String status = a.getStatus();
+			int status = a.getStatus().equals("Pending") ? 0 : 1;
 			int buyid = a.getBuyer_id();
 			
-			String insertSQL = String.format("INSERT INTO Feedback(Feedback_ID,Feedback,Status,Buyer_ID) VALUES(%d,'%s','%s' )",id,fb,"Pending",buyid);
+			String insertSQL = String.format("INSERT INTO Feedback(Feedback,Status,Buyer_ID) VALUES('%s',%d,%d )",fb,status,buyid);
 			int rowsAffected = DBUtil.execSQL(insertSQL);
 
 			if (rowsAffected == 1)

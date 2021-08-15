@@ -18,6 +18,7 @@ public class C206_CaseStudyTest {
 	private static final String DB_PASSWORD = "";
 	private static final int BUYER_ID = 1;
 	private static final int APPOINTMENT_ID = 1;	
+	private static final int FEEDBACK_ID = 1;	
 	
 	@Before 
 	public void setUp() throws Exception { 
@@ -28,21 +29,27 @@ public class C206_CaseStudyTest {
 		
 		//Add Appointment with buyer_id 999
 		insertSQL = String.format("INSERT INTO appointment(Appointment_ID,Buyer_ID,Date,Staff_Name) VALUES(%d,%d,'%s','%s' )",APPOINTMENT_ID,BUYER_ID,"8/14/2029","JEFFREY");
-		int rowsAffected = DBUtil.execSQL(insertSQL);
+		DBUtil.execSQL(insertSQL);
+		
+		//Add Feedback with buyer_id 1 and feedback id _1
+		insertSQL =String.format("INSERT INTO Feedback(Feedback_ID,Feedback,Status,Buyer_ID) VALUES(%d,'%s',%d,%d )",FEEDBACK_ID,"TEST",0,BUYER_ID);
+		DBUtil.execSQL(insertSQL);
+		System.out.println("SETUP");
 		
 	}
 
 	@After
 	public void tearDown() throws Exception {
 		//RESET TABLES TO 0 RECORDS
-		DBUtil.execSQL("DELETE FROM appointment");						
-		DBUtil.execSQL("DELETE FROM buyers");
 		DBUtil.execSQL("DELETE FROM feedback");
+		DBUtil.execSQL("DELETE FROM appointment");						
+		DBUtil.execSQL("DELETE FROM buyers");		
 		System.out.println("TEAR DOWN");
 		
 		//RESET AUTO INCREMENT COUNT
 		DBUtil.execSQL("ALTER TABLE appointment AUTO_INCREMENT = 1");
 		DBUtil.execSQL("ALTER TABLE buyers AUTO_INCREMENT = 1");
+		DBUtil.execSQL("ALTER TABLE feedback AUTO_INCREMENT = 1");
 	}
 
 	@Test 
@@ -53,19 +60,28 @@ public class C206_CaseStudyTest {
 	// Raphael /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	@Test
 	public void addBuyer() {
+		System.out.println("\nBuyer -Add");
+		Helper.line(40, "-*");
+		
 		Buyer b = new Buyer(2,"RAPHAL","92782826", "RAPHAEL@GMAIL.COM");
 		assertEquals("Check if new buyer can be inserted into Database",1,c.addBuyer(b));		
 		assertEquals("Check if same buyer can be inserted into Database",0,c.addBuyer(b));				
 	}
 	
 	@Test
-	public void deleteBuyer() {		
+	public void deleteBuyer() {
+		System.out.println("\nBuyer -Delete");
+		Helper.line(40, "-*");
+		
 		assertEquals("Check if can delete existing buyer",1,c.deleteAppointment(1));		
 		assertEquals("Check if can delete non-existing buyer",0,c.deleteAppointment(1));
 	}
 	
 	@Test
 	public void viewBuyer() {
+		System.out.println("\nBuyer -View");
+		Helper.line(40, "-*");
+		
 		String output = String.format("%-4s%-10s%-15s%s\n", "ID","Name","MobileNo","Email");
 		output += String.format("%-4s%-10s%-15s%s\n", 1,"TEST","TEST","TEST");	
 		
@@ -77,6 +93,9 @@ public class C206_CaseStudyTest {
 	// SARAN ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	@Test //Saran
 	public void addAppointment() {
+		System.out.println("\nAppointment -Add");
+		Helper.line(40, "-*");
+		
 		String date = "9/14/2021";
 		String staffName = "Jerry";
 		Appointment failApp = new Appointment(9999, date, staffName);
@@ -90,6 +109,9 @@ public class C206_CaseStudyTest {
 	
 	@Test //Saran
 	public void deleteAppointment() {
+		System.out.println("\nAppointment -DELETE");
+		Helper.line(40, "-*");
+		
 		int deleteResult = c.deleteAppointment(9999);
 		assertEquals("Check if can delete non-existent buyer appointment",deleteResult, 0);
 		
@@ -101,7 +123,10 @@ public class C206_CaseStudyTest {
 	}
 	
 	@Test //Saran
-	public void viewAppointment() {					
+	public void viewAppointment() {				
+		System.out.println("\nAppointment -View");
+		Helper.line(40, "-*");
+		
 		String output = String.format("%-5s%-15s%s\n", "ID","Date","Staff Name");
 		output += String.format("%-5s%-15s%s\n", APPOINTMENT_ID,"8/14/2029","JEFFREY");
 		
@@ -109,7 +134,10 @@ public class C206_CaseStudyTest {
 		
 	}
 	@Test
-	public void updateAppointment() {		
+	public void updateAppointment() {
+		System.out.println("\nAppointment -Update");
+		Helper.line(40, "-*");
+		
 		Appointment updatedAppointment = new Appointment(BUYER_ID,APPOINTMENT_ID,"10/14/2029","TESTER");
 		assertEquals("Test that appointment with valid input can be updated",c.updateAppointment(updatedAppointment),1);
 		
@@ -131,7 +159,7 @@ public class C206_CaseStudyTest {
 		assertEquals("Test that method returns true when given date more than today",c.checkDate("8/14/2099"),true);
 	}
 	@Test //Saran
-	public void testName() {
+	public void testName() {		
 		assertEquals("Test that return false when empty",c.checkName(""), false);
 		assertEquals("Test that return false when name length less than 3",c.checkName("Red"), false);
 		assertEquals("Test that return false when name valid",c.checkName("Saran"), true);
@@ -142,31 +170,36 @@ public class C206_CaseStudyTest {
 	@Test //Hui Jun
 	public void addFeedback()
 	{
-		Feedback newFeedback = new Feedback(2,"ILOVERADIOCAR",0,13);
-		assertEquals("Check if new feedback can be inserted into Database",c.addFeedback(newFeedback),0);		
+		System.out.println("\nFeedback -ADD");
+		Helper.line(40, "-*");
+		Feedback newFeedback = new Feedback("ILOVERADIOCAR",0,BUYER_ID);
+		assertEquals("Check if new feedback can be inserted into Database",c.addFeedback(newFeedback),1);		
 		assertEquals("Check if same feedback cannot be inserted into Database",c.addFeedback(newFeedback),0);	
 	}
 	
 	@Test //Hui Jun
 	public void viewFeedback()
 	{
+		System.out.println("\nFeedback - VIEW");
+		Helper.line(40, "-*");
 		String output = String.format("%-5s %-45s %-10s %-5s\n", "ID","Feedback","Status","Buyer ID");
-		output += String.format("%-5d %-45s %-10d %-5d\n", 1,"ILOVERADIOCAR",0,13);	
-		
+		output += String.format("%-5d %-45s %-10d %-5d\n", FEEDBACK_ID,"TEST",0,BUYER_ID);			
 		assertEquals("Check that all feedback can be displayed",c.viewFeedback(),output);
 	}
 	
 	@Test //Hui Jun
 	public void deleteFeedback()
 	{
+		System.out.println("\nFeedback - DELETE");
+		Helper.line(40, "-*");
 		int deleteFeedback = c.deleteFeedback(99);
 		assertEquals("Check if can delete feedback that do not exist",deleteFeedback, 0);
 		
-		deleteFeedback = c.deleteFeedback(deleteFeedback);
-		assertEquals("Check if can delete existing feedback ",deleteFeedback, 0);
+		deleteFeedback = c.deleteFeedback(FEEDBACK_ID);
+		assertEquals("Check if can delete existing feedback ",deleteFeedback, 1);
 		
 		deleteFeedback = c.deleteFeedback(deleteFeedback);
-		assertEquals("Check if can delete non-existent feedback ",deleteFeedback, 0);
+		assertEquals("Check if can delete feedback that was deleted ",deleteFeedback, 0);
 	}
 	
 }
