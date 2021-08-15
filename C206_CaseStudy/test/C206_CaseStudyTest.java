@@ -83,9 +83,9 @@ public class C206_CaseStudyTest {
 		Helper.line(40, "-*");
 		
 		String output = String.format("%-4s%-10s%-15s%s\n", "ID","Name","MobileNo","Email");
-		output += String.format("%-4s%-10s%-15s%s\n", 1,"TEST","TEST","TEST");	
+		output += String.format("%-4s%-10s%-15s%s\n", 1,"TEST","TEST","TEST");			
+		assertEquals("Check that all BUYER can be displayed",c.viewBuyer(),output);					
 		
-		assertEquals("Check that all appointment can be displayed",c.viewBuyer(),output);
 	}
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -131,6 +131,17 @@ public class C206_CaseStudyTest {
 		output += String.format("%-5s%-15s%s\n", APPOINTMENT_ID,"8/14/2029","JEFFREY");
 		
 		assertEquals("Test that all appointment can be displayed",c.viewAppointments(),output);
+		
+		
+		DBUtil.execSQL("DELETE FROM appointment");
+		output = String.format("%-5s%-15s%s\n", "ID","Date","Staff Name");
+		assertEquals("Check that does not display DELETED appointment",c.viewAppointments(),output);		
+		
+		DBUtil.execSQL(String.format("INSERT INTO appointment(Appointment_ID,Buyer_ID,Date,Staff_Name) VALUES(%d,%d,'%s','%s' )",APPOINTMENT_ID,BUYER_ID,"8/14/2029","JEFFREY"));	
+		output = String.format("%-5s%-15s%s\n", "ID","Date","Staff Name");
+		output += String.format("%-5s%-15s%s\n", APPOINTMENT_ID,"8/14/2029","JEFFREY");
+		assertEquals("Check that display ADDED appointment",c.viewAppointments(),output);
+		
 		
 	}
 	@Test
