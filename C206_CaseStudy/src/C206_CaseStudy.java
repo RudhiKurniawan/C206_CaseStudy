@@ -63,7 +63,7 @@ public class C206_CaseStudy {
 			Helper.line(20, "-*");
 			System.out.println(title);
 			Helper.line(20, "-*");
-			System.out.println("1. ADD "+title);
+			System.out.println("1. Add "+title);
 			System.out.println("2. Delete "+title);
 			System.out.println("3. View "+title);		
 			
@@ -96,7 +96,18 @@ public class C206_CaseStudy {
 				}
 				else if(option == 3) {
 					System.out.println(viewBuyer());
-				}			
+				}		
+				else if(option == 4) {
+					System.out.println(viewBuyer()+"\n");			
+					int id = Helper.readInt("Enter Buyer ID > ");
+					String name = Helper.readString("Enter Buyer name > ");
+					String mobileNo = Helper.readString("Enter Mobile Number > ");
+					String email = Helper.readString("Enter Email > ");
+					if(validateGuestInput(mobileNo,name,email))
+						updateBuyer(new Buyer(id,name,mobileNo,email));
+					else
+						System.out.println("Invalid Fields");					
+				}
 			}
 		}		
 		public int addBuyer(Buyer b) {
@@ -121,6 +132,18 @@ public class C206_CaseStudy {
 				System.out.println("Buyer deleted!");
 			else
 				System.out.println("Buyer deletion failed");
+			return rowsAffected;
+		}
+		public int updateBuyer(Buyer b) {	
+			
+			String insertSQL = String.format("UPDATE buyers SET Name = '%s',MobileNo ='%s',Email ='%s' WHERE Buyer_ID = %d",b.getName(),b.getMobileNo(),b.getEmail(),b.getBuyer_ID());
+			int rowsAffected = DBUtil.execSQL(insertSQL);
+
+			if (rowsAffected == 1)
+				System.out.println("Buyer Updated!");		
+			else
+				System.out.println("Buyer ID dont exist!");
+			
 			return rowsAffected;
 		}
 		public String viewBuyer() {

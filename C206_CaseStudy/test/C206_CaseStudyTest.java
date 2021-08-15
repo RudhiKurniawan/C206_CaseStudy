@@ -32,7 +32,7 @@ public class C206_CaseStudyTest {
 		DBUtil.execSQL(insertSQL);
 		
 		//Add Feedback with buyer_id 1 and feedback id _1
-		insertSQL =String.format("INSERT INTO Feedback(Feedback_ID,Feedback,Status,Buyer_ID) VALUES(%d,'%s',%d,%d )",FEEDBACK_ID,"TEST",0,BUYER_ID);
+		insertSQL = String.format("INSERT INTO Feedback(Feedback_ID,Feedback,Status,Buyer_ID) VALUES(%d,'%s',%d,%d )",FEEDBACK_ID,"TEST",0,BUYER_ID);
 		DBUtil.execSQL(insertSQL);
 		System.out.println("SETUP");
 		
@@ -63,18 +63,49 @@ public class C206_CaseStudyTest {
 		System.out.println("\nBuyer -Add");
 		Helper.line(40, "-*");
 		
-		Buyer b = new Buyer(2,"RAPHAL","92782826", "RAPHAEL@GMAIL.COM");
+		Buyer b = new Buyer(2,"RAPHAEL","92782826", "RAPHAEL@GMAIL.COM");
 		assertEquals("Check if new buyer can be inserted into Database",1,c.addBuyer(b));		
-		assertEquals("Check if same buyer can be inserted into Database",0,c.addBuyer(b));				
+		assertEquals("Check if same buyer can be inserted into Database",0,c.addBuyer(b));		
+		
+		String output = String.format("%-4s%-10s%-15s%s\n", "ID","Name","MobileNo","Email");		
+		output += String.format("%-4s%-10s%-15s%s\n", 1,"TEST","TEST","TEST");	
+		output += String.format("%-4s%-10s%-15s%s\n", 2,"RAPHAEL","92782826","RAPHAEL@GMAIL.COM");
+		
+		assertEquals("Check that BUYER can be displayed after adding",c.viewBuyer(),output);
+		
+		
 	}
-	
+	@Test
+	public void updateBuyer() {
+		System.out.println("\nBuyer -Add");
+		Helper.line(40, "-*");
+		
+		Buyer b = new Buyer(1,"TESTER","91234567","Tester@gmail.com");
+		assertEquals("Test that buyer with valid input can be updated",c.updateBuyer(b),1);
+		
+		b = new Buyer(999,"TESTER","91234567","Tester@gmail.com");		
+		assertNotNull("Check Buyer not Null", b);
+		assertEquals("Test that appointment that does not exist cannot be updated",c.updateBuyer(b),0);
+		
+		
+
+	}
 	@Test
 	public void deleteBuyer() {
 		System.out.println("\nBuyer -Delete");
 		Helper.line(40, "-*");
 		
-		assertEquals("Check if can delete existing buyer",1,c.deleteAppointment(1));		
-		assertEquals("Check if can delete non-existing buyer",0,c.deleteAppointment(1));
+		DBUtil.execSQL("DELETE FROM feedback");
+		DBUtil.execSQL("DELETE FROM appointment");
+		
+		System.out.println(c.viewBuyer());
+		
+		assertEquals("Check if can delete existing buyer",1,c.deleteBuyer(BUYER_ID));		
+		assertEquals("Check if can delete non-existing buyer",0,c.deleteBuyer(BUYER_ID));
+		
+		String output = String.format("%-4s%-10s%-15s%s\n", "ID","Name","MobileNo","Email");		
+		assertEquals("Check that output is empty",c.viewBuyer(),output);
+		
 	}
 	
 	@Test
@@ -84,7 +115,14 @@ public class C206_CaseStudyTest {
 		
 		String output = String.format("%-4s%-10s%-15s%s\n", "ID","Name","MobileNo","Email");
 		output += String.format("%-4s%-10s%-15s%s\n", 1,"TEST","TEST","TEST");			
-		assertEquals("Check that all BUYER can be displayed",c.viewBuyer(),output);					
+		assertNotNull("Variable contains values",output);
+		assertEquals("Check that all BUYER can be displayed",c.viewBuyer(),output);		
+		
+		DBUtil.execSQL(String.format("INSERT INTO buyers(Buyer_ID,Name,MobileNo,Email) VALUES(%d,'%s','%s','%s' )",2,"TEST1","TEST1","TEST1"));		
+		output += String.format("%-4s%-10s%-15s%s\n", 2,"TEST1","TEST1","TEST1");		
+		
+		assertEquals("Check that BUYER can be displayed after adding",c.viewBuyer(),output);
+				
 		
 	}
 	
@@ -98,19 +136,31 @@ public class C206_CaseStudyTest {
 		
 		String date = "9/14/2021";
 		String staffName = "Jerry";
+		
 		Appointment failApp = new Appointment(9999, date, staffName);
 		int addResult = c.addAppointment(failApp);
 		assertEquals("Check if Appointment is not added into Database when given non existing user id",addResult, 0);
 		
 		Appointment passApp = new Appointment(BUYER_ID, date, staffName);
 		addResult = c.addAppointment(passApp);
-		assertEquals("Check if Appointment is added into Database when given existing user id",addResult, 1);				
+		assertEquals("Check if Appointment is added into Database when given existing user id",addResult, 1);	
+				
+		String output = String.format("%-5s%-15s%s\n", "ID","Date","Staff Name");
+		output += String.format("%-5s%-15s%s\n", 1,"8/14/2029","JEFFREY");
+		output += String.format("%-5s%-15s%s\n", 3,date,staffName);
+		
+		System.out.println(c.viewAppointments());
+		
+		assertEquals("Test that there are no appointments",c.viewAppointments(),output);
+		
+		
 	}
 	
 	@Test //Saran
 	public void deleteAppointment() {
 		System.out.println("\nAppointment -DELETE");
 		Helper.line(40, "-*");
+		
 		
 		int deleteResult = c.deleteAppointment(9999);
 		assertEquals("Check if can delete non-existent buyer appointment",deleteResult, 0);
